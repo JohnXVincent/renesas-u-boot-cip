@@ -856,6 +856,24 @@ struct efi_device_path_utilities_protocol {
 		uint16_t node_length);
 };
 
+/* Decompression protocol */
+
+#define EFI_DECOMPRESS_PROTOCOL_GUID \
+  {0xd8117cfe,0x94a6,0x11d4,\
+    {0x9a,0x3a,0x00,0x90,0x27,0x3f,0xc1,0x4d}}
+
+/* Protocol Interface Structure */
+typedef struct efi_decompress_protocol {
+  /*Get Info */
+  efi_status_t (EFIAPI *efi_decompress_get_info) (
+  efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
+  uint32_t *DestinationSize, uint32_t *ScratchSize);
+ /*Decompress()*/
+  efi_status_t (EFIAPI *efi_decompress_decompress) (
+  efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
+  void *Destination, uint32_t *DestinationSize, void *Scratch,uint32_t *ScratchSize);
+};
+
 /*
  * Human Interface Infrastructure (HII)
  */
