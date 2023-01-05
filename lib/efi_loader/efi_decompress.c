@@ -83,7 +83,7 @@ static void Decode (SCRATCH_DATA *Sd, uint16_t NumOfBytes);
  //
 
 efi_status_t (EFIAPI *efi_decompress_get_info) (
-efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
+struct efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
 uint32_t_t *DestinationSize, uint32_t_t *ScratchSize);
  /*++
 
@@ -121,7 +121,7 @@ buffer are successful retrieved.
 }
 
 efi_status_t (EFIAPI *efi_decompress_decompress) (
-  efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
+  struct efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
   void *Destination, uint32_t_t *DestinationSize, void *Scratch,uint32_t_t *ScratchSize)
 /*++
 
@@ -273,12 +273,7 @@ Arguments:
  Sd->mBitBuf \|= Sd->mSubBitBuf >> Sd->mBitCount;
 }
 
-STATIC
-uint16_t
-GetBits(
- IN SCRATCH_DATA *Sd,
- IN uint16_t NumOfBits
- )
+static uint16_t GetBits( SCRATCH_DATA *Sd,uint16_t NumOfBits)
 /*++
 
 Routine Description:
@@ -306,14 +301,11 @@ The bits that are popped out.
  return OutBits;
 }
 
-STATIC
-uint16_t
-MakeTable (
- IN SCRATCH_DATA *Sd,
- IN uint16_t NumOfChar,
- IN uint8_t *BitLen,
- IN uint16_t TableBits,
- OUT uint16_t *Table
+static uint16_t MakeTable (SCRATCH_DATA *Sd,
+ uint16_t NumOfChar,
+ uint8_t *BitLen,
+ uint16_t TableBits,
+ uint16_t *Table
  )
 /*++
 
@@ -488,14 +480,7 @@ Returns:
   return Val;
  }
 
- STATIC
- uint16_t
- ReadPTLen (
-  IN SCRATCH_DATA *Sd,
-  IN uint16_t nn,
-  IN uint16_t nbit,
-  IN uint16_t Special
-  )
+ static uint16_t ReadPTLen ( SCRATCH_DATA *Sd,uint16_t nn, uint16_t nbit,uint16_t Special)
 /*++
 
 Routine Description
@@ -571,11 +556,7 @@ Returns:
  return ( MakeTable (Sd, nn, Sd->mPTLen, 8, Sd->mPTTable) );
 }
 
-STATIC
-VOID
-ReadCLen (
- SCRATCH_DATA *Sd
- )
+static void ReadCLen (SCRATCH_DATA *Sd)
 /*++
 
 Routine Description:

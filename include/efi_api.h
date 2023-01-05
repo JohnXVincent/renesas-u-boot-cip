@@ -866,11 +866,11 @@ struct efi_device_path_utilities_protocol {
 typedef struct efi_decompress_protocol {
   /*Get Info */
   efi_status_t (EFIAPI *efi_decompress_get_info) (
-  efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
+  struct efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
   uint32_t *DestinationSize, uint32_t *ScratchSize);
  /*Decompress()*/
   efi_status_t (EFIAPI *efi_decompress_decompress) (
-  efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
+  struct efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
   void *Destination, uint32_t *DestinationSize, void *Scratch,uint32_t *ScratchSize);
 };
 
