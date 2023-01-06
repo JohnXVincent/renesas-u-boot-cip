@@ -246,7 +246,7 @@ extern const struct efi_hii_config_routing_protocol efi_hii_config_routing;
 extern const struct efi_hii_config_access_protocol efi_hii_config_access;
 extern const struct efi_hii_database_protocol efi_hii_database;
 extern const struct efi_hii_string_protocol efi_hii_string;
-
+extern const struct efi_decompress_protocol efi_decompress;
 uint16_t *efi_dp_str(struct efi_device_path *dp);
 
 /* GUID of the U-Boot root node */
@@ -293,6 +293,8 @@ extern const efi_guid_t efi_guid_hii_config_routing_protocol;
 extern const efi_guid_t efi_guid_hii_config_access_protocol;
 extern const efi_guid_t efi_guid_hii_database_protocol;
 extern const efi_guid_t efi_guid_hii_string_protocol;
+/* GUID of the decompression protocol */
+extern const efi_guid_t efi_guid_decompress_protocol;
 /* GUIDs for authentication */
 extern const efi_guid_t efi_guid_image_security_database;
 extern const efi_guid_t efi_guid_sha256;

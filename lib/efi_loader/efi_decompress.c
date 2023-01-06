@@ -71,6 +71,12 @@ typedef struct {
 } SCRATCH_DATA;
 
  //
+ // Constants
+ //
+
+const efi_guid_t efi_guid_decompress_protocol = EFI_DECOMPRESS_PROTOCOL_GUID;
+
+ //
  // Function Prototypes
  //
 

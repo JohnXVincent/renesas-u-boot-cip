@@ -248,6 +248,12 @@ config EFI_LOADER_HII
 	  U-Boot implements enough of its features to be able to run the UEFI
 	  Shell, but not more than that.
 
+config CONFIG_EFI_DECOMPRESS_ENABLE
+	bool "decompress protocol"
+	default y
+	help
+	  decompress protocol
+
 config EFI_UNICODE_COLLATION_PROTOCOL2
 	bool "Unicode collation protocol"
 	default y
