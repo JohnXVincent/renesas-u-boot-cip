@@ -88,7 +88,7 @@ efi_status_t efi_root_node_register(void)
 #endif
 #if CONFIG_IS_ENABLED(CONFIG_EFI_DECOMPRESS_ENABLE)
 			 /* decompress protocol */
-			 &efi_decompress_protocol,
+			 &efi_guid_decompress_protocol,
 			 (void *)&efi_decompress,
 #endif
 			 NULL));
