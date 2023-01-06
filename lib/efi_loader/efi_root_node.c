@@ -80,10 +80,10 @@ efi_status_t efi_root_node_register(void)
 			 &efi_guid_hii_database_protocol,
 			 (void *)&efi_hii_database,
 			 /* HII config routing protocol */
-			 &efi_hii_config_routing_protocol,
+			 &efi_guid_hii_config_routing_protocol,
 			 (void *)&efi_hii_config_routing,
 			 /* HII config routing protocol */
-			 &efi_hii_config_access_protocol,
+			 &efi_guid_hii_config_access_protocol,
 			 (void *)&efi_hii_config_access,
 #endif
 #if CONFIG_IS_ENABLED(CONFIG_EFI_DECOMPRESS_ENABLE)
