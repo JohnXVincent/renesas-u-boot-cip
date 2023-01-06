@@ -863,7 +863,7 @@ struct efi_device_path_utilities_protocol {
     {0x9a,0x3a,0x00,0x90,0x27,0x3f,0xc1,0x4d}}
 
 /* Protocol Interface Structure */
-typedef struct efi_decompress_protocol {
+struct efi_decompress_protocol {
   /*Get Info */
   efi_status_t (EFIAPI *efi_decompress_get_info) (
   struct efi_decompress_protocol *This, void *Source, uint32_t SourceSize, 
