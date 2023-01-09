@@ -1,4 +1,4 @@
-=/*++
+/*++
 
 Copyright (c) 2001-2002 Intel Corporation
 
@@ -15,6 +15,7 @@ The code is used from https://uefi.org/specs/UEFI/2.10/Apx_I_Decompression_Sourc
 --*/
 
 #include <common.h>
+#include <efi_api.h>
 #include <efi_loader.h>
 
 #define BITBUFSIZ       16
@@ -88,9 +89,9 @@ static void Decode (SCRATCH_DATA *Sd, uint16_t NumOfBytes);
  // Functions
  //
 
-efi_status_t (EFIAPI *efi_decompress_get_info) (
-struct efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
-uint32_t_t *DestinationSize, uint32_t_t *ScratchSize);
+efi_status_t efi_decompress_get_info (
+struct efi_decompress_protocol *This, void *Source, uint32_t SrcSize, 
+uint32_t *DstSize, uint32_t *ScratchSize)
  /*++
 
 Routine Description:
@@ -126,9 +127,9 @@ buffer are successful retrieved.
  return EFI_SUCCESS;
 }
 
-efi_status_t (EFIAPI *efi_decompress_decompress) (
-  struct efi_decompress_protocol *This, void *Source, uint32_t_t SourceSize, 
-  void *Destination, uint32_t_t *DestinationSize, void *Scratch,uint32_t_t *ScratchSize)
+efi_status_t  efi_decompress_decompress (
+  struct efi_decompress_protocol *This, void *Source, uint32_t SrcSize, 
+  void *Destination, uint32_t DstSize, void *Scratch,uint32_t *ScratchSize)
 /*++
 
 Routine Description:
@@ -158,7 +159,7 @@ Returns:
  uint32_t     CompSize;
  uint32_t     OrigSize;
  uint8_t      *Dst1;
- EFI_STATUS Status;
+ efi_status_t Status;
  SCRATCH_DATA *Sd;
  uint8_t      *Src;
  uint8_t      *Dst;
@@ -254,7 +255,8 @@ Arguments:
 
  while (NumOfBits > Sd->mBitCount) {
 
-  Sd->mBitBuf \|= (uint16_t)(Sd->mSubBitBuf <<
+ //TODO check this logic Sd->mBitBuf \|= 
+  Sd->mBitBuf |= (uint16_t)(Sd->mSubBitBuf <<
    (NumOfBits = (uint16_t)(NumOfBits - Sd->mBitCount)));
 
   if (Sd->mCompSize > 0) {
@@ -276,7 +278,8 @@ Arguments:
  }
 
  Sd->mBitCount = (uint16_t)(Sd->mBitCount - NumOfBits);
- Sd->mBitBuf \|= Sd->mSubBitBuf >> Sd->mBitCount;
+ //TODO verify mBitBuf settings
+ Sd->mBitBuf |= Sd->mSubBitBuf >> Sd->mBitCount;
 }
 
 static uint16_t GetBits( SCRATCH_DATA *Sd,uint16_t NumOfBits)
@@ -437,7 +440,7 @@ for (Char = 0; Char < NumOfChar; Char++) {
  return 0;
 }
 
-static void DecodeP (SCRATCH_DATA *Sd)
+static uint16_t DecodeP (SCRATCH_DATA *Sd)
 /*++
 
 Routine description:
@@ -549,7 +552,7 @@ Returns:
   if (i == Special) {
 
    c = GetBits (Sd, 2);
-   while ((INT16)(--c) >= 0) {
+   while ((int16_t)(--c) >= 0) {
     Sd->mPTLen[i++] = 0;
    }
   }
@@ -633,7 +636,7 @@ Returns: (VOID)
    c = (uint16_t)(GetBits (Sd, CBIT) + 20);
   }
 
-  while ((INT16)(--c) >= 0) {
+  while ((int16_t)(--c) >= 0) {
    Sd->mCLen[i++] = 0;
   }
 
@@ -654,7 +657,7 @@ Returns: (VOID)
 }
 
 
-static void DecodeC (SCRATCH_DATA *Sd)
+static uint16_t DecodeC (SCRATCH_DATA *Sd)
 /*++
 
 Routine Description:
@@ -744,7 +747,7 @@ Returns: (VOID)
  di = 0;
 
  Sd->mBytesRemain --;
- while ((INT16)(Sd->mBytesRemain) >= 0) {
+ while ((int16_t)(Sd->mBytesRemain) >= 0) {
   Sd->mBuffer[di++] = Sd->mBuffer[Sd->mDataIdx++];
 
   if (Sd->mDataIdx >= WNDSIZ) {
@@ -790,7 +793,7 @@ Returns: (VOID)
   di = r;
 
   Sd->mBytesRemain --;
-  while ((INT16)(Sd->mBytesRemain) >= 0) {
+  while ((int16_t)(Sd->mBytesRemain) >= 0) {
    Sd->mBuffer[di++] = Sd->mBuffer[Sd->mDataIdx++];
    if (Sd->mDataIdx >= WNDSIZ) {
     Sd->mDataIdx -= WNDSIZ;
@@ -806,3 +809,5 @@ Returns: (VOID)
 
  return;
 }
+}
+

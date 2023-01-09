@@ -86,6 +86,11 @@ efi_status_t efi_root_node_register(void)
 			 &efi_guid_hii_config_access_protocol,
 			 (void *)&efi_hii_config_access,
 #endif
+#if CONFIG_IS_ENABLED(CONFIG_EFI_DECOMPRESS_ENABLE)
+			 /* decompress protocol */
+			 &efi_guid_decompress_protocol,
+			 (void *)&efi_decompress,
+#endif
 			 NULL));
 	efi_root->type = EFI_OBJECT_TYPE_U_BOOT_FIRMWARE;
 	return ret;
