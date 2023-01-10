@@ -811,3 +811,7 @@ Returns: (VOID)
 }
 }
 
+const struct efi_decompress_protocol efi_decompress_data = {
+       .efi_decompress_get_info = efi_decompress_get_info,
+       .efi_decompress_decompress = efi_decompress_decompress
+};
