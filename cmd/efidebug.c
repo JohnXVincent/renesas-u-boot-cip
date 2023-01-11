@@ -554,6 +554,10 @@ static const struct {
 		"Graphics Output",
 		EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID,
 	},
+    {
+        "decompress",
+        EFI_DECOMPRESS_PROTOCOL_GUID,
+    },
 	{
 		"HII String",
 		EFI_HII_STRING_PROTOCOL_GUID,

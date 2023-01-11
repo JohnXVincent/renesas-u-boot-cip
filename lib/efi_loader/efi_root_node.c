@@ -58,6 +58,9 @@ efi_status_t efi_root_node_register(void)
 			 &efi_guid_device_path_to_text_protocol,
 			 (void *)&efi_device_path_to_text,
 #endif
+			 /* decompress protocol */
+			 &efi_guid_decompress_protocol,
+			 (void *)&efi_decompress_data,
 #ifdef CONFIG_EFI_DEVICE_PATH_UTIL
 			 /* Device path utilities protocol */
 			 &efi_guid_device_path_utilities_protocol,
@@ -79,6 +82,12 @@ efi_status_t efi_root_node_register(void)
 			 /* HII database protocol */
 			 &efi_guid_hii_database_protocol,
 			 (void *)&efi_hii_database,
+			 /* HII config routing protocol */
+			 &efi_guid_hii_config_routing_protocol,
+			 (void *)&efi_hii_config_routing,
+			 /* HII config access protocol */
+			 &efi_guid_hii_config_access_protocol,
+			 (void *)&efi_hii_config_access,
 #endif
 			 NULL));
 	efi_root->type = EFI_OBJECT_TYPE_U_BOOT_FIRMWARE;

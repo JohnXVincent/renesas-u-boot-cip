@@ -35,6 +35,7 @@ obj-y += efi_dt_fixup.o
 endif
 obj-y += efi_file.o
 obj-$(CONFIG_EFI_LOADER_HII) += efi_hii.o
+obj-$(CONFIG_EFI_LOADER_HII) += efi_hii_config.o
 obj-y += efi_image_loader.o
 obj-y += efi_load_options.o
 obj-y += efi_memory.o
@@ -64,6 +65,7 @@ obj-$(CONFIG_EFI_RNG_PROTOCOL) += efi_rng.o
 obj-$(CONFIG_EFI_TCG2_PROTOCOL) += efi_tcg2.o
 obj-$(CONFIG_EFI_LOAD_FILE2_INITRD) += efi_load_initrd.o
 obj-$(CONFIG_EFI_SIGNATURE_SUPPORT) += efi_signature.o
+obj-y += efi_decompress.o
 
 EFI_VAR_SEED_FILE := $(subst $\",,$(CONFIG_EFI_VAR_SEED_FILE))
 $(obj)/efi_var_seed.o: $(srctree)/$(EFI_VAR_SEED_FILE)
