@@ -551,6 +551,10 @@ static const struct {
 		EFI_LOADED_IMAGE_PROTOCOL_GUID,
 	},
 	{
+		"decompress",
+		EFI_DECOMPRESS_PROTOCOL_GUID,
+	},
+	{
 		"Graphics Output",
 		EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID,
 	},

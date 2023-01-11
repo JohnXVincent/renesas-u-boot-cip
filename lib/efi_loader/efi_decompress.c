@@ -89,7 +89,7 @@ static void Decode (SCRATCH_DATA *Sd, uint16_t NumOfBytes);
  // Functions
  //
 
-efi_status_t efi_decompress_get_info (
+efi_status_t EFIAPI efi_decompress_get_info (
 struct efi_decompress_protocol *This, void *Source, uint32_t SrcSize, 
 uint32_t *DstSize, uint32_t *ScratchSize)
  /*++
@@ -127,7 +127,7 @@ buffer are successful retrieved.
  return EFI_SUCCESS;
 }
 
-efi_status_t  efi_decompress_decompress (
+efi_status_t  EFIAPI efi_decompress_decompress (
   struct efi_decompress_protocol *This, void *Source, uint32_t SrcSize, 
   void *Destination, uint32_t DstSize, void *Scratch,uint32_t *ScratchSize)
 /*++
