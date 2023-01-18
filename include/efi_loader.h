@@ -510,6 +510,9 @@ efi_status_t efi_tcg2_measure_efi_app_exit(void);
 efi_status_t efi_root_node_register(void);
 /* Called by bootefi to initialize runtime */
 efi_status_t efi_initialize_system_table(void);
+/* Called by init object list */
+void efi_initialize_mono_count(void);
+
 /* efi_runtime_detach() - detach unimplemented runtime functions */
 void efi_runtime_detach(void);
 /* efi_convert_pointer() - convert pointer to virtual address */

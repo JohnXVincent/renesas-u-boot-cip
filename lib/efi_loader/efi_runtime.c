@@ -16,6 +16,7 @@
 #include <rtc.h>
 #include <asm/global_data.h>
 #include <u-boot/crc.h>
+#include <efi_variable.h>
 
 /* For manual relocation support */
 DECLARE_GLOBAL_DATA_PTR;
@@ -251,7 +252,11 @@ static efi_status_t EFIAPI efi_get_time_boottime(
 	efi_status_t ret = EFI_SUCCESS;
 	struct rtc_time tm;
 	struct udevice *dev;
-
+	s16 time_zone;
+	efi_status_t ret_var_read;
+	u32 attributes;
+	efi_uintn_t size;
+	
 	EFI_ENTRY("%p %p", time, capabilities);
 
 	if (!time) {
@@ -282,8 +287,23 @@ static efi_status_t EFIAPI efi_get_time_boottime(
 		time->daylight = EFI_TIME_ADJUST_DAYLIGHT;
 	else
 		time->daylight = 0;
-	time->timezone = EFI_UNSPECIFIED_TIMEZONE;
 
+	time->timezone = EFI_UNSPECIFIED_TIMEZONE;
+    ret_var_read = efi_get_variable_int(L"DriverF00E",
+                              &efi_global_variable_guid,
+                              &attributes,
+                              &size, &time_zone, NULL);
+	if (ret_var_read == EFI_NOT_FOUND) {
+		printf("[%d]EFI System Partition ubootefi.var or timezone variable not found .... \n",__LINE__);
+	}
+	else if(ret_var_read != EFI_SUCCESS)
+	{
+		printf("[%d]Timezone variable read error %ld \n",__LINE__,ret_var_read);
+	}
+	else
+	{
+		time->timezone = time_zone;
+	}
 	if (capabilities) {
 		/* Set reasonable dummy values */
 		capabilities->resolution = 1;		/* 1 Hz */
@@ -340,6 +360,7 @@ static efi_status_t EFIAPI efi_set_time_boottime(struct efi_time *time)
 	efi_status_t ret = EFI_SUCCESS;
 	struct rtc_time tm;
 	struct udevice *dev;
+	efi_status_t ret_var;
 
 	EFI_ENTRY("%p", time);
 
@@ -360,6 +381,7 @@ static efi_status_t EFIAPI efi_set_time_boottime(struct efi_time *time)
 	tm.tm_hour = time->hour;
 	tm.tm_min = time->minute;
 	tm.tm_sec = time->second;
+	
 	switch (time->daylight) {
 	case EFI_TIME_ADJUST_DAYLIGHT:
 		tm.tm_isdst = 0;
@@ -370,6 +392,15 @@ static efi_status_t EFIAPI efi_set_time_boottime(struct efi_time *time)
 	default:
 		tm.tm_isdst = -1;
 		break;
+	}
+
+	ret_var = efi_set_variable_int(L"DriverF00E",
+								&efi_global_variable_guid,
+								EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
+								sizeof(s16), &time->timezone, false);
+	if(ret_var != EFI_SUCCESS)
+	{
+		printf("[%d]Timezone variable Write error %ld \n",__LINE__,ret_var);
 	}
 	/* Calculate day of week */
 	rtc_calc_weekday(&tm);

@@ -331,11 +331,11 @@ efi_status_t efi_init_obj_list(void)
 	if (IS_ENABLED(CONFIG_EFI_CAPSULE_ON_DISK) &&
 	    !IS_ENABLED(CONFIG_EFI_CAPSULE_ON_DISK_EARLY))
 		ret = efi_launch_capsules();
-
 out:
 	r = efi_clear_os_indications();
 	if (ret == EFI_SUCCESS)
 		ret = r;
 	efi_obj_list_initialized = ret;
+	efi_initialize_mono_count();
 	return ret;
 }

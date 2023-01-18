@@ -22,6 +22,7 @@
 #include <asm/global_data.h>
 #include <asm/setjmp.h>
 #include <linux/libfdt_env.h>
+#include <efi_variable.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -62,6 +63,17 @@ static volatile gd_t *efi_gd, *app_gd;
 /* 1 if inside U-Boot code, 0 if inside EFI payload code */
 static int entry_count = 1;
 static int nesting_level;
+
+/*monotonic count is stored here.
+This value is increased everytime efi_get_next_monotonic_count() is called
+The high 32 bit count is incremented when lowever 32 bit overflow
+The high count is incremented on every reboot
+The high count is stored in NVRAM.
+The low value is not stored in NVRAM. Its value set to 0 on every reset*/
+
+static uint64_t g_mono = 0;
+
+
 /* GUID of the device tree table */
 const efi_guid_t efi_guid_fdt = EFI_FDT_GUID;
 /* GUID of the EFI_DRIVER_BINDING_PROTOCOL */
@@ -2203,7 +2215,6 @@ out:
  */
 static efi_status_t EFIAPI efi_get_next_monotonic_count(uint64_t *count)
 {
-	static uint64_t mono;
 	efi_status_t ret;
 
 	EFI_ENTRY("%p", count);
@@ -2211,7 +2222,7 @@ static efi_status_t EFIAPI efi_get_next_monotonic_count(uint64_t *count)
 		ret = EFI_INVALID_PARAMETER;
 		goto out;
 	}
-	*count = mono++;
+	*count = g_mono++;
 	ret = EFI_SUCCESS;
 out:
 	return EFI_EXIT(ret);
@@ -3806,4 +3817,75 @@ efi_status_t efi_initialize_system_table(void)
 	efi_update_table_header_crc32(&efi_boot_services.hdr);
 
 	return ret;
+}
+
+/**
+ * efi_initialize_mono_count() - Initialise mono count
+ *
+ * Return:	void
+ */
+void efi_initialize_mono_count(void)
+{
+	efi_status_t ret_var_read;
+	efi_status_t ret_var_write;
+	u32 attributes;
+	efi_uintn_t size;
+
+	/* Init high count to 0, just in case read fails*/
+	uint32_t high_count=0;
+
+   /*Initialise mono count:
+   Read high monocount from NVRAM and stored high 32 bits of g_mono
+   Increment high count and store it back to NVRAM*/
+   /*If file read fails ignore error use 0*/ 
+   ret_var_read = efi_get_variable_int(L"DriverF00F",
+                              &efi_global_variable_guid,
+                              &attributes,
+                              &size, &high_count, NULL);
+	if (ret_var_read == EFI_NOT_FOUND) {
+		printf("[%d]EFI System Partition ubootefi.var or mono count variable not found .... \n",__LINE__);
+	}
+	else if(ret_var_read != EFI_SUCCESS)
+	{
+		printf("[%d]Mono count variable read error %ld \n",__LINE__,ret_var_read);
+	}
+	else
+	{
+		printf("[%d]Number of reset so for %d \n",__LINE__,high_count);
+		/* the low count is lost during init*/
+		g_mono = (uint64_t)((uint64_t)high_count << 32);
+	}
+	/* Increment high count and save*/
+	high_count++;
+	/*If file write fails ignore error use 0*/
+	ret_var_write = efi_set_variable_int(L"DriverF00F",
+								&efi_global_variable_guid,
+								EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
+								sizeof(uint32_t), &high_count, false);
+	if(ret_var_write != EFI_SUCCESS)
+	{
+		printf("[%d]Mono count variable Write not successful %ld \n",__LINE__,ret_var_write);
+	}
+	if(ret_var_read != EFI_SUCCESS && ret_var_write != EFI_SUCCESS)
+	{
+		printf("[%d]BOTH read and write mono count not successful \n",__LINE__);
+	}
+	if(ret_var_read != EFI_SUCCESS)
+	{
+		ret_var_read = efi_get_variable_int(L"DriverF00F",
+								&efi_global_variable_guid,
+								&attributes,
+								&size, &high_count, NULL);
+		if (ret_var_read == EFI_NOT_FOUND) {
+			printf("[%d]EFI Read after the write not successful.... \n",__LINE__);
+		}
+		else if(ret_var_read != EFI_SUCCESS)
+		{
+			printf("[%d]Reset counter cleared ... \n",__LINE__);
+		}
+		else
+		{
+			printf("[%d]GOOD2:2nd Read Mono count variable read Success high_count %d , size %ld \n",__LINE__,high_count,size);
+		}		
+	}
 }
