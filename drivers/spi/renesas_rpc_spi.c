@@ -456,6 +456,7 @@ static const struct udevice_id rpc_spi_ids[] = {
 	{ .compatible = "renesas,rpc-r8a77970" },
 	{ .compatible = "renesas,rpc-r8a77995" },
 	{ .compatible = "renesas,rcar-gen3-rpc" },
+	{ .compatible = "renesas,r8a774a1-rpc-if" },
 	{ }
 };
 

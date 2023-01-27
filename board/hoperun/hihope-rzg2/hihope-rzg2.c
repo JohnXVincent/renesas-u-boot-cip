@@ -50,6 +50,14 @@ DECLARE_GLOBAL_DATA_PTR;
 #define GPIO_WLAN_REG_ON		157
 #define GPIO_BT_REG_ON			158
 
+#define PFC_BASE	0xE6060000
+#define I2C_CH1 	0xE6508000
+
+#define CPG_BASE					0x11010000
+#define CPG_RESET_BASE				(CPG_BASE + 0x800)
+#define CPG_RESET_I2C               (CPG_RESET_BASE + 0x80)
+#define RPC_CMNCR	0xEE200000
+
 static int board_rev;
 
 void clear_wlan_bt_reg_on(void)
@@ -149,7 +157,9 @@ int board_init(void)
 
 	clear_wlan_bt_reg_on();
 
+	*(volatile u32 *)(RPC_CMNCR) = 0x01FFF300;
 	return 0;
+
 }
 
 void reset_cpu(void)

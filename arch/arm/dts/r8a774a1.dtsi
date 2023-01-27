@@ -26,6 +26,7 @@
 		i2c5 = &i2c5;
 		i2c6 = &i2c6;
 		i2c7 = &i2c_dvfs;
+		spi0 = &rpc;
 	};
 
 	/*
@@ -2377,7 +2378,21 @@
 			resets = <&cpg 917>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-			status = "disabled";
+
+			num-cs = <1>;
+			status = "okay";
+			spi-max-frequency = <40000000>;
+
+			flash0: spi-flash@0 {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				compatible = "spi-flash", "jedec,spi-nor";
+				spi-max-frequency = <40000000>;
+				spi-tx-bus-width = <1>;
+				spi-rx-bus-width = <1>;
+				reg = <0>;
+				status = "okay";
+			};
 		};
 
 		gic: interrupt-controller@f1010000 {

@@ -256,7 +256,9 @@ static efi_status_t EFIAPI efi_get_time_boottime(
 	efi_status_t ret_var_read;
 	u32 attributes;
 	efi_uintn_t size;
-	
+	int tm_isdst;
+	int tm_isdst_read;
+
 	EFI_ENTRY("%p %p", time, capabilities);
 
 	if (!time) {
@@ -280,10 +282,20 @@ static efi_status_t EFIAPI efi_get_time_boottime(
 	time->hour = tm.tm_hour;
 	time->minute = tm.tm_min;
 	time->second = tm.tm_sec;
-	if (tm.tm_isdst > 0)
+	/*tm.tm_isdst is not nonvalitile and hence using file read value*/
+	tm_isdst = tm.tm_isdst;
+    ret_var_read = efi_get_variable_int(L"DriverF00D",
+                              &efi_global_variable_guid,
+                              &attributes,
+                              &size, &tm_isdst_read, NULL);
+	if (ret_var_read == EFI_SUCCESS) {
+		tm_isdst = tm_isdst_read;
+	}
+
+	if (tm_isdst > 0)
 		time->daylight =
 			EFI_TIME_ADJUST_DAYLIGHT | EFI_TIME_IN_DAYLIGHT;
-	else if (!tm.tm_isdst)
+	else if (!tm_isdst)
 		time->daylight = EFI_TIME_ADJUST_DAYLIGHT;
 	else
 		time->daylight = 0;
@@ -402,6 +414,16 @@ static efi_status_t EFIAPI efi_set_time_boottime(struct efi_time *time)
 	{
 		printf("[%d]Timezone variable Write error %ld \n",__LINE__,ret_var);
 	}
+
+	ret_var = efi_set_variable_int(L"DriverF00D",
+								&efi_global_variable_guid,
+								EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
+								sizeof(int), &tm.tm_isdst, false);
+	if(ret_var != EFI_SUCCESS)
+	{
+		printf("[%d]time daylight settings variable Write error %ld \n",__LINE__,ret_var);
+	}
+
 	/* Calculate day of week */
 	rtc_calc_weekday(&tm);
 
