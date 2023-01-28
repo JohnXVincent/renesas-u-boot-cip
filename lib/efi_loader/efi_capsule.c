@@ -522,7 +522,7 @@ efi_status_t EFIAPI efi_update_capsule(
 				&capsule->capsule_guid);
 			ret = EFI_UNSUPPORTED;
 		}
-
+		ret  = efi_capsule_update_firmware(capsule); 
 		if (ret != EFI_SUCCESS)
 			goto out;
 	}
