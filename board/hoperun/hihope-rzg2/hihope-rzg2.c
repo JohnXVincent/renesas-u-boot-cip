@@ -50,6 +50,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define GPIO_WLAN_REG_ON		157
 #define GPIO_BT_REG_ON			158
 
+#define RPC_CMNCR_REGISTER				(0xEE200000)
+
 static int board_rev;
 
 void clear_wlan_bt_reg_on(void)
@@ -148,6 +150,12 @@ int board_init(void)
 		return board_rev;
 
 	clear_wlan_bt_reg_on();
+
+	/*BSZ = 0: Serial flash memory x 1
+	  IO0FV= 11 Output value Hi-Z
+	  MOIIO0/3 = 11 Hi-Z
+	  MD = Manual mode */
+	*(volatile u32 *)(RPC_CMNCR_REGISTER) = 0x00FFF300;
 
 	return 0;
 }
