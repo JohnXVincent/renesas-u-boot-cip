@@ -239,7 +239,7 @@
 				entry-latency-us = <400>;
 				exit-latency-us = <500>;
 				min-residency-us = <4000>;
-				status = "okay";
+				status = "disabled";
 			};
 
 			CPU_SLEEP_1: cpu-sleep-1 {
@@ -249,7 +249,7 @@
 				entry-latency-us = <700>;
 				exit-latency-us = <700>;
 				min-residency-us = <5000>;
-				status = "okay";
+				status = "disabled";
 			};
 		};
 	};
